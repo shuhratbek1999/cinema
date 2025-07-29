@@ -45,6 +45,23 @@
         </div>
       </div>
     </div>
+    <div class="container mx-auto px-4 py-12">
+      <h2 class="text-2xl font-bold mb-6">Cinema</h2>
+      <div
+        class="aspect-w-16 aspect-h-9 bg-gray-800 rounded-lg overflow-hidden"
+      >
+        <iframe
+          v-if="cinemaKey"
+          :src="`https://www.youtube.com/embed/${cinemaKey}`"
+          class="w-full h-96"
+          frameborder="0"
+          allowfullscreen
+        ></iframe>
+        <div v-else class="flex items-center justify-center h-64 text-gray-500">
+          Cinema topilmadi
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -56,6 +73,7 @@ import axios from "axios";
 const route = useRoute();
 const movie = ref(null);
 const trailerKey = ref("");
+const cinemaKey = ref("");
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const fetchMovieDetails = async () => {
   const res = await axios.get(
@@ -68,7 +86,10 @@ const fetchTrailer = async () => {
   const res = await axios.get(
     `https://api.themoviedb.org/3/movie/${route.params.id}/videos?api_key=${API_KEY}`
   );
+  // console.log(res.data.results);
   const trailer = res.data.results.find((video) => video.type === "Trailer");
+  const cinema = res.data.results.find((c) => c.type === "Clip");
+  cinemaKey.value = cinema?.key;
   trailerKey.value = trailer?.key;
 };
 

@@ -51,13 +51,33 @@
       <!-- Pagination -->
       <div class="flex justify-center mt-8">
         <button
-          v-for="page in totalPages"
+          @click="prevPage"
+          :disabled="currentPage === 1"
+          class="mx-1 px-3 py-1 rounded-l bg-gray-800 disabled:opacity-50"
+        >
+          &laquo;
+        </button>
+
+        <button
+          v-for="page in visiblePages"
           :key="page"
-          @click="currentPage = page"
+          @click="goToPage(page)"
           class="mx-1 px-3 py-1 rounded"
-          :class="currentPage === page ? 'bg-red-600' : 'bg-gray-800'"
+          :class="
+            currentPage === page
+              ? 'bg-red-600'
+              : 'bg-gray-800 hover:bg-gray-700'
+          "
         >
           {{ page }}
+        </button>
+
+        <button
+          @click="nextPage"
+          :disabled="currentPage === totalPages"
+          class="mx-1 px-3 py-1 rounded-r bg-gray-800 disabled:opacity-50"
+        >
+          &raquo;
         </button>
       </div>
     </div>
@@ -65,7 +85,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import { RouterLink } from "vue-router";
 import axios from "axios";
 import MovieCard from "@/components/MovieCard.vue";
@@ -92,12 +112,45 @@ const fetchFeaturedMovie = async () => {
 };
 
 const fetchMovies = async (category = "movie/popular") => {
-  const res = await axios.get(
-    `https://api.themoviedb.org/3/${category}?api_key=${API_KEY}&page=${currentPage.value}`
-  );
-  movies.value = res.data.results;
+  try {
+    const res = await axios.get(
+      `https://api.themoviedb.org/3/${category}?api_key=${API_KEY}&page=${currentPage.value}`
+    );
+    movies.value = res.data.results;
+    // API dan kelgan haqiqiy sahifalar sonini olamiz
+    totalPages.value = res.data.total_pages > 500 ? 500 : res.data.total_pages;
+  } catch (error) {
+    console.error("Xatolik yuz berdi:", error);
+  }
 };
+const visiblePages = computed(() => {
+  const pages = [];
+  const start = Math.max(1, currentPage.value - 2);
+  const end = Math.min(totalPages.value, currentPage.value + 2);
 
+  for (let i = start; i <= end; i++) {
+    pages.push(i);
+  }
+  return pages;
+});
+const goToPage = (page) => {
+  currentPage.value = page;
+  // Sahifani yuqoriga aylantiramiz
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
+const prevPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+  }
+};
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++;
+  }
+};
+watch(currentPage, () => {
+  fetchMovies();
+});
 onMounted(() => {
   fetchFeaturedMovie();
   fetchMovies();

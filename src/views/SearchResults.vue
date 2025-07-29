@@ -37,7 +37,7 @@ import { ref } from "vue";
 import { useRoute } from "vue-router";
 import axios from "axios";
 import MovieCard from "@/components/MovieCard.vue";
-import.meta.env.VITE_TMDB_API_KEY;
+const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const query = ref("");
 const results = ref([]);
 const loading = ref(false);

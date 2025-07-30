@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-center mt-8">
+  <div class="flex justify-center mt-8 pb-4">
     <button
       @click="goToFirst"
       :disabled="currentPage === 1"
@@ -7,15 +7,6 @@
     >
       &laquo;
     </button>
-
-    <button
-      @click="prevPage"
-      :disabled="currentPage === 1"
-      class="mx-1 px-3 py-1 bg-gray-800 disabled:opacity-50"
-    >
-      &lsaquo;
-    </button>
-
     <template v-for="page in visiblePages" :key="page">
       <button v-if="page === '...'" disabled class="mx-1 px-3 py-1 bg-gray-800">
         {{ page }}
@@ -31,15 +22,6 @@
         {{ page }}
       </button>
     </template>
-
-    <button
-      @click="nextPage"
-      :disabled="currentPage === totalPages"
-      class="mx-1 px-3 py-1 bg-gray-800 disabled:opacity-50"
-    >
-      &rsaquo;
-    </button>
-
     <button
       @click="goToLast"
       :disabled="currentPage === totalPages"

@@ -9,6 +9,7 @@ export const useMoviesStore = defineStore("movies", {
     genres: [],
     isLoading: false,
     error: null,
+    currentPage: null,
   }),
   actions: {
     async fetchPopularMovies(page = 1) {
@@ -54,6 +55,10 @@ export const useMoviesStore = defineStore("movies", {
       } catch (error) {
         this.error = error.message;
       }
+    },
+    pageIncrement(num) {
+      console.log(num, "num");
+      this.currentPage = num;
     },
   },
   getters: {

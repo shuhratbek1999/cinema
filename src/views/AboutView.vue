@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-900 text-white min-h-screen py-12">
+  <div class="bg-gray-900 text-white min-h-screen max-sm:pt-20 md:mt-2">
     <div class="container mx-auto px-4">
       <!-- Sahifa sarlavhasi -->
       <div class="text-center mb-12">

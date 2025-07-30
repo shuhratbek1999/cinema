@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-900 text-white min-h-screen py-8">
+  <div class="bg-gray-900 text-white min-h-screen max-sm:pt-20 md:pt-2">
     <div class="container mx-auto px-4">
       <div class="flex justify-between items-center mb-8">
         <h1 class="text-3xl font-bold">Barcha Kinolar</h1>
@@ -53,68 +53,35 @@
         />
       </div>
 
-      <!-- Pagination -->
-      <div v-if="!loading" class="flex justify-center mt-8">
-        <button
-          @click="prevPage"
-          :disabled="currentPage === 1"
-          class="px-3 py-1 rounded-l bg-gray-800 disabled:opacity-50"
-        >
-          <Icon icon="mdi:chevron-left" class="w-5 h-5" />
-        </button>
-        <button
-          v-for="page in visiblePages"
-          :key="page"
-          @click="goToPage(page)"
-          class="px-3 py-1 border-t border-b border-gray-700"
-          :class="
-            currentPage === page
-              ? 'bg-red-600'
-              : 'bg-gray-800 hover:bg-gray-700'
-          "
-        >
-          {{ page }}
-        </button>
-        <button
-          @click="nextPage"
-          :disabled="currentPage === totalPages"
-          class="px-3 py-1 rounded-r bg-gray-800 disabled:opacity-50"
-        >
-          <Icon icon="mdi:chevron-right" class="w-5 h-5" />
-        </button>
-      </div>
+      <Pagination
+        :current-page="currentPage"
+        :total-pages="totalPages"
+        @page-changed="handlePageChange"
+        class="mt-8"
+      />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import axios from "axios";
 import { Icon } from "@iconify/vue";
+import { RouterLink, useRoute, useRouter } from "vue-router";
 import MovieCard from "@/components/MovieCard.vue";
-
+import Pagination from "@/components/Pagination.vue";
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
 // Data
+const route = useRoute();
+const router = useRouter();
 const movies = ref([]);
 const genres = ref([]);
 const selectedGenres = ref([]);
 const searchQuery = ref("");
 const loading = ref(false);
-const currentPage = ref(1);
-const totalPages = ref(1);
-
-// Computed
-const visiblePages = computed(() => {
-  const pages = [];
-  const start = Math.max(1, currentPage.value - 2);
-  const end = Math.min(totalPages.value, currentPage.value + 2);
-
-  for (let i = start; i <= end; i++) {
-    pages.push(i);
-  }
-  return pages;
-});
+const currentPage = ref(route.query.page ? parseInt(route.query.page) : 1);
+const totalPages = ref(5);
 
 // Methods
 const fetchGenres = async () => {
@@ -164,29 +131,36 @@ const toggleGenre = (genreId) => {
   currentPage.value = 1;
   fetchMovies();
 };
-
-const goToPage = (page) => {
-  currentPage.value = page;
-  fetchMovies();
+const handlePageChange = (newPage) => {
+  currentPage.value = newPage;
+  updateUrl();
   window.scrollTo({ top: 0, behavior: "smooth" });
 };
-
-const prevPage = () => {
-  if (currentPage.value > 1) {
-    currentPage.value--;
-    fetchMovies();
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
+// URLni yangilash
+const updateUrl = () => {
+  router.replace({
+    name: "movies",
+    query: {
+      ...route.query,
+      page: currentPage.value > 1 ? currentPage.value : undefined,
+    },
+  });
 };
-
-const nextPage = () => {
-  if (currentPage.value < totalPages.value) {
-    currentPage.value++;
-    fetchMovies();
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-};
-
+watch([currentPage, selectedGenres], () => {
+  fetchMovies();
+});
+watch(
+  () => route.query,
+  (newQuery) => {
+    if (newQuery.page && parseInt(newQuery.page) !== currentPage.value) {
+      currentPage.value = parseInt(newQuery.page);
+    }
+    if (newQuery.category && newQuery.category !== activeCategory.value) {
+      activeCategory.value = newQuery.category;
+    }
+  },
+  { immediate: true }
+);
 // Lifecycle hooks
 onMounted(() => {
   fetchGenres();

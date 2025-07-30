@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-900 text-white min-h-screen py-8">
+  <div class="bg-gray-900 text-white min-h-screen max-sm:pt-20 md:pt-2">
     <div class="container mx-auto px-4 max-w-4xl">
       <h1 class="text-3xl font-bold mb-8">Sozlamalar</h1>
 

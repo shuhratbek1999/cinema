@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-900 text-white min-h-screen">
+  <div class="bg-gray-900 text-white min-h-screen max-sm:pt-20 md:pt-2">
     <div class="container mx-auto px-4 py-8">
       <!-- Qidiruv paneli -->
       <div class="mb-8 p-4 bg-gray-800 rounded-lg">

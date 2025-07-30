@@ -47,9 +47,14 @@
       >
         <MovieCard v-for="movie in movies" :key="movie.id" :movie="movie" />
       </div>
-
+      <Pagination
+        :current-page="currentPage"
+        :total-pages="totalPages"
+        @page-changed="handlePageChange"
+        class="mt-8"
+      />
       <!-- Pagination -->
-      <div class="flex justify-center mt-8">
+      <!-- <div class="flex justify-center mt-8">
         <button
           @click="prevPage"
           :disabled="currentPage === 1"
@@ -79,24 +84,28 @@
         >
           &raquo;
         </button>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, watch, computed } from "vue";
-import { RouterLink } from "vue-router";
+import { RouterLink, useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import MovieCard from "@/components/MovieCard.vue";
+import Pagination from "@/components/Pagination.vue";
 import { Icon } from "@iconify/vue";
+
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+const route = useRoute();
+const router = useRouter();
 
 const featuredMovie = ref(null);
 const movies = ref([]);
-const currentPage = ref(1);
+const currentPage = ref(route.query.page ? parseInt(route.query.page) : 1);
 const totalPages = ref(5);
-const activeCategory = ref("popular");
+const activeCategory = ref(route.query.category || "popular");
 
 const categories = [
   { id: "popular", name: "Mashhurlar", url: `movie/popular` },
@@ -104,6 +113,7 @@ const categories = [
   { id: "now_playing", name: "Hozir kinoda", url: `movie/now_playing` },
 ];
 
+// Asosiy funksiyalar
 const fetchFeaturedMovie = async () => {
   const res = await axios.get(
     `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}`
@@ -111,46 +121,55 @@ const fetchFeaturedMovie = async () => {
   featuredMovie.value = res.data.results[Math.floor(Math.random() * 10)];
 };
 
-const fetchMovies = async (category = "movie/popular") => {
+const fetchMovies = async (category = activeCategory.value) => {
   try {
+    const categoryObj =
+      categories.find((c) => c.id === category) || categories[0];
     const res = await axios.get(
-      `https://api.themoviedb.org/3/${category}?api_key=${API_KEY}&page=${currentPage.value}`
+      `https://api.themoviedb.org/3/${categoryObj.url}?api_key=${API_KEY}&page=${currentPage.value}`
     );
     movies.value = res.data.results;
-    // API dan kelgan haqiqiy sahifalar sonini olamiz
     totalPages.value = res.data.total_pages > 500 ? 500 : res.data.total_pages;
+    activeCategory.value = category;
+    updateUrl(); // URLni yangilash
   } catch (error) {
     console.error("Xatolik yuz berdi:", error);
   }
 };
-const visiblePages = computed(() => {
-  const pages = [];
-  const start = Math.max(1, currentPage.value - 2);
-  const end = Math.min(totalPages.value, currentPage.value + 2);
-
-  for (let i = start; i <= end; i++) {
-    pages.push(i);
-  }
-  return pages;
-});
-const goToPage = (page) => {
-  currentPage.value = page;
-  // Sahifani yuqoriga aylantiramiz
+const handlePageChange = (newPage) => {
+  currentPage.value = newPage;
+  updateUrl();
   window.scrollTo({ top: 0, behavior: "smooth" });
 };
-const prevPage = () => {
-  if (currentPage.value > 1) {
-    currentPage.value--;
-  }
+// URLni yangilash
+const updateUrl = () => {
+  router.replace({
+    name: "home",
+    query: {
+      ...route.query,
+      page: currentPage.value > 1 ? currentPage.value : undefined,
+    },
+  });
 };
-const nextPage = () => {
-  if (currentPage.value < totalPages.value) {
-    currentPage.value++;
-  }
-};
-watch(currentPage, () => {
+// Kuzatuvchilar
+watch([currentPage, activeCategory], () => {
   fetchMovies();
 });
+
+watch(
+  () => route.query,
+  (newQuery) => {
+    if (newQuery.page && parseInt(newQuery.page) !== currentPage.value) {
+      currentPage.value = parseInt(newQuery.page);
+    }
+    if (newQuery.category && newQuery.category !== activeCategory.value) {
+      activeCategory.value = newQuery.category;
+    }
+  },
+  { immediate: true }
+);
+
+// Dastlabki yuklash
 onMounted(() => {
   fetchFeaturedMovie();
   fetchMovies();

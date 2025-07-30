@@ -1,7 +1,10 @@
 <template>
-  <div v-if="movie" class="bg-gray-900 text-white min-h-screen py-32">
+  <div
+    v-if="movie"
+    class="bg-gray-900 text-white min-h-screen max-sm:pt-20 md:pt-2"
+  >
     <!-- Banner va asosiy ma'lumot -->
-    <div class="relative">
+    <div class="relative top-10">
       <img
         :src="`https://image.tmdb.org/t/p/original${movie.backdrop_path}`"
         class="w-full h-96 object-cover opacity-40"

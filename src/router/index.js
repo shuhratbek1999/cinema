@@ -6,6 +6,9 @@ const routes = [
     path: "/",
     name: "home",
     component: HomeView,
+    props: (route) => ({
+      page: route.query.page ? parseInt(route.query.page) : 1,
+    }),
   },
   {
     path: "/movies",
@@ -68,5 +71,11 @@ const router = createRouter({
     return { top: 0 };
   },
 });
-
+router.beforeEach((to, from, next) => {
+  if (from.name === "movie-detail" && to.name === "home") {
+    // Orqaga qaytayotganda scroll pozitsiyasini saqlash
+    to.meta.scrollPos = from.meta.scrollPos || { x: 0, y: 0 };
+  }
+  next();
+});
 export default router;

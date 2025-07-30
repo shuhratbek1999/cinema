@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-900 text-white min-h-screen py-8">
+  <div class="bg-gray-900 text-white min-h-screen max-sm:pt-20 md:pt-2">
     <div class="container mx-auto px-4">
       <!-- Profil header -->
       <div

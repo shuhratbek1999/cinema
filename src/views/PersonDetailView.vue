@@ -1,5 +1,8 @@
 <template>
-  <div v-if="person" class="bg-gray-900 text-white min-h-screen py-32">
+  <div
+    v-if="person"
+    class="bg-gray-900 text-white min-h-screen max-sm:pt-20 md:pt-2"
+  >
     <!-- Banner qismi -->
     <div class="relative">
       <img

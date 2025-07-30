@@ -1,5 +1,8 @@
 <template>
-  <div v-if="tvShow" class="bg-gray-900 text-white min-h-screen">
+  <div
+    v-if="tvShow"
+    class="bg-gray-900 text-white min-h-screen max-sm:pt-20 md:pt-2"
+  >
     <!-- Banner qismi -->
     <div class="relative">
       <img

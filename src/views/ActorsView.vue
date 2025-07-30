@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-900 text-white min-h-screen">
+  <div class="bg-gray-900 text-white min-h-screen py-3">
     <div class="container mx-auto px-4">
       <div class="flex justify-between items-center mb-8">
         <h1 class="text-3xl font-bold">Aktyorlar</h1>

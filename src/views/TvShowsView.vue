@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-900 text-white min-h-screen max-sm:pt-20 md:pt-2">
+  <div class="bg-gray-900 text-white min-h-screen py-2">
     <div class="container mx-auto px-4">
       <div class="flex justify-between items-center mb-8">
         <h1 class="text-3xl font-bold">Barcha Seriallar</h1>

@@ -1,10 +1,10 @@
 <template>
   <div
     v-if="person"
-    class="bg-gray-900 text-white min-h-screen max-sm:pt-20 md:pt-2"
+    class="bg-gray-900 text-white min-h-screen pt-[30px] sm:pt-0"
   >
     <!-- Banner qismi -->
-    <div class="relative">
+    <div class="relative h-[300px] sm:h-[400px] md:h-[500px] overflow-hidden">
       <img
         v-if="person.profile_path"
         :src="`https://image.tmdb.org/t/p/original${person.profile_path}`"
